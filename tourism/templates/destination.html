@@ -1,0 +1,179 @@
+{% extends "layout.html" %}
+{% block title %}{{ place.name }}{% endblock %}
+{% block stylesheet %}
+    <link rel="stylesheet" href="/static/styles/destination.css">
+{% endblock %}
+
+{% block body %}
+    <div class="interactive-background" id="interactiveBackground">
+        <canvas id="backgroundCanvas"></canvas>
+        <div class="floating-particles"></div>
+        <div class="color-orbs">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+            <div class="orb orb-4"></div>
+            <div class="orb orb-5"></div>
+        </div>
+    </div>
+
+    <nav class="navigation">
+        <a href="/preview" class="back-link">← Back to Destinations</a>
+        <div class="nav-title">{{ place.name }}, {{ place.location }}</div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>{{ place.name }}</h1>
+                <h2>{{ place.location }}</h2>
+                <p class="hero-description">{{ place.short_description }}</p>
+
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">{{ place.hills_count or '—' }}</span>
+                        <span class="stat-label">Hills</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">{{ place.area_km2 or '—' }}</span>
+                        <span class="stat-label">km² Area</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">{{ place.rating or '—' }}</span>
+                        <span class="stat-label">★ Rating</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="image-slider">
+                <div class="slider-container">
+                    {% for image_url in place.image_urls %}
+                        <div class="slide {% if loop.first %}active{% endif %}">
+                            <img src="{{ image_url }}" alt="{{ place.name }} Image {{ loop.index }}">
+                            <div class="slide-caption">{{ place.name }} {{ loop.index }}</div>
+                        </div>
+                    {% else %}
+                        <div class="slide active">
+                            <img src="/static/images/placeholder.jpg" alt="{{ place.name }}">
+                            <div class="slide-caption">{{ place.name }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button class="slider-btn prev-btn" id="prevBtn">‹</button>
+                <button class="slider-btn next-btn" id="nextBtn">›</button>
+
+                <div class="slider-dots">
+                    <span class="dot active" data-slide="0"></span>
+                    <span class="dot" data-slide="1"></span>
+                    <span class="dot" data-slide="2"></span>
+                    <span class="dot" data-slide="3"></span>
+                    <span class="dot" data-slide="4"></span>
+                </div>
+            </div>
+
+            <button class="slider-btn prev-btn" id="prevBtn">‹</button>
+            <button class="slider-btn next-btn" id="nextBtn">›</button>
+
+            <div class="slider-dots">
+                {% for img in place.images %}
+                    <span class="dot {% if loop.first %}active{% endif %}" data-slide="{{ loop.index0 }}"></span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <section class="details-section">
+        <div class="details-container">
+
+            <div class="detail-card">
+                <h3>About {{ place.name }}</h3>
+                <div class="card-content">
+                    <p>{{ place.long_description }}</p>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h3>📍 Location & Access</h3>
+                <div class="card-content">
+                    <div class="location-info">
+                        <p><strong>Address:</strong> {{ place.location }}</p>
+                        <p><strong>Unique Feature:</strong> {{ place.unique_feature }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h3>🕒 Best Time to Visit</h3>
+                <div class="card-content">
+                    <div class="time-info">
+                        {% for season in seasons %}
+                            <div class="season">
+                                <h4>{{ season.season_name }}</h4>
+                                <p>{{ season.description }}</p>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h3>🎯 Activities & Attractions</h3>
+                <div class="card-content">
+                    <div class="activities-grid">
+                        {% for activity in activities %}
+                            <div class="activity">
+                                <span class="activity-icon">{{ activity.icon or '🎯' }}</span>
+                                <h4>{{ activity.name }}</h4>
+                                <p>{{ activity.description }}</p>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h3>✨ Highlights</h3>
+                <div class="card-content">
+                    <ul class="highlights-list">
+                        {% for highlight in highlights %}
+                            <li>{{ highlight.highlight }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h3>💡 Travel Tips</h3>
+                <div class="card-content">
+                    <div class="tips-grid">
+                        {% for tip in tips %}
+                            <div class="tip">
+                                <h4>{{ tip.tip_type }}</h4>
+                                <p>{{ tip.content }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Ready to Experience the Wonder?</h2>
+            <p>Book your trip to {{ place.name }} and witness one of nature's most incredible formations</p>
+            <div class="cta-buttons">
+                <button class="cta-btn primary" data-action="book-tour"><a style="color: white; text-decoration: none;" href="https://www.traveltourphilippines.com/">Book Tour Now</a></button>
+                <button class="cta-btn secondary view-photos-btn" data-place="{{ place.name }}">View More Photos</button>
+            </div>
+        </div>
+    </section>
+
+    {% block scripts %}
+        <script src="/static/scripts/destination.js"></script>
+    {% endblock %}
+{% endblock %}
